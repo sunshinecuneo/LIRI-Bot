@@ -24,54 +24,109 @@ function concertThis(searchTerm) {
     var concertUrl = "https://rest.bandsintown.com/artists/" + searchTerm + "/events?app_id=codingbootcamp"
     axios.get(concertUrl).then(
         function (response) {
-            console.log(response.data[0].venue);
-            //  var dateFormat = moment(response.data[0].datetime;
-            // console.log(response.data[0].datetime.format("MM/DD/YYYY"));
-
+            var dateFormat = moment(response.data[0].datetime).format('MM/DD/YYYY');
+            var concertData = [`
+            Venue Name: ${response.data[0].venue.name}
+            Venue Location: ${response.data[0].venue.city}
+            Date: ${dateFormat}`].join("/n/r");
+            console.log(concertData);
+            logSearches(concertData);
         });
 }
 
 // Searching the Spotify API for a song name
 function spotifyThis(searchTerm) {
-    // var Spotify = require("node-spotify-api");
+    if (searchTerm ==false) {
+        searchTerm = "The Sign by Ace of Base"
+    }
     spotify.search({ type: 'track', query: searchTerm }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        console.log(data.tracks.items[0].album.artists[0].name);
-
-        console.log(data.tracks.items[0].album.preview_url || data.tracks.items[0].album.href);
-        //   console.log(data.tracks.items[0].album.href); 
-        console.log(data.tracks.items[0].album.name);
+            var spotifyData = [`
+        Artist Name: ${data.tracks.items[0].album.artists[0].name}
+        Song Name: ${data.tracks.items[0].name}
+        Album Preview Link: ${data.tracks.items[0].album.preview_url || "No preview link available"}
+        Album Name: ${data.tracks.items[0].album.name}
+        `].join("/n/r");
+        console.log(spotifyData);
+        logSearches(spotifyData);
     });
 }
 
-function getMeMovie(searchTerm) {
+// Searching the OMDB for a movie
+function getMovie(searchTerm) {
+    if (searchTerm ==false) {
+        searchTerm = "Mr. Nobody"
+    }
     axios.get("http://www.omdbapi.com/?t=" + searchTerm + "&y=&plot=short&apikey=trilogy").then(
         function (response) {
-            console.log(response.data.Title);
-            console.log(response.data.Year);
-            console.log(response.data.imdbRating);
-            console.log(response.data.Ratings[1]);
-            console.log(response.data.Country);
-            console.log(response.data.Language);
-            console.log(response.data.Plot);
-            console.log(response.data.Actors);
+            var movieData = [`
+    Title: ${response.data.Title}
+    Year the movie came out: ${response.data.Year}
+    IMDB rating: ${response.data.Ratings[0].Value} 
+    Rotten Tomatoes rating: ${response.data.Ratings[1].Value} 
+    Country Produced: ${response.data.Country} 
+    Language: ${response.data.Language} 
+    Plot: ${response.data.Plot} 
+    Actors: ${response.data.Actors} 
+                    `].join("/n/r");
+            console.log(movieData);
+            logSearches(movieData);
         }
     );
 }
+function doWhatItSays() {
+    fs.readFile("random.txt", "utf8", function (err, data) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+        var newSearch = data.split(",");
+        var newCommand = newSearch[0];
+        var newOperator = newSearch[1];
+
+        switch (newCommand) {
+            case "concert-this":
+                var artist = newOperator;
+                concertThis(artist);
+                break;
+            case "spotify-this-song":
+                var song = newOperator;
+                spotifyThis(song);
+                break;
+            case "movie-this":
+                var movie = newOperator;
+                movieThis(movie);
+                break;
+            default:
+                console.log("Hit default!");
+                return false;
+        }
+    });
+}
+
+
 
 // Function for determining which command is executed
 var commandThis = function (command, searchTerm) {
+    // fs.appendFile('log.txt', command + ",  " + searchTerm + "; ",  function (err) {
+    //     if (err) throw err;
+    //     console.log("The data to append was appended to file!");
+    //   });
+
     switch (command) {
         case "concert-this":
             concertThis(searchTerm);
             break;
         case "spotify-this-song":
+            var song = searchTerm
+            if (!searchTerm) {
+                song = "The Sign by Ace of Base";
+            }
             spotifyThis(searchTerm);
             break;
         case "movie-this":
-            getMeMovie(searchTerm);
+            getMovie(searchTerm);
             break;
         case "do-what-it-says":
             doWhatItSays();
@@ -89,6 +144,14 @@ var runCommand = function (argOne, argTwo) {
 // MAIN PROCESS
 // =====================================
 runCommand(process.argv[2], process.argv.slice(3).join(" "));
+
+function logSearches(term) {
+
+    fs.appendFile("log.txt", term, function (err) {
+        if (err) throw err;
+    })
+
+}
 
 
 
