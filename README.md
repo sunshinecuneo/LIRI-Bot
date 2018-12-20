@@ -7,7 +7,7 @@
 ![Gif of LIRI concert-this](Images/liri_concert_this.gif)
 
 2. Type this command in node: node liri.js spotify-this-song '<song name here>'
-![Gif of LIRI spotify-this-song](liri_spotify_this_song.gif)
+![Gif of LIRI spotify-this-song](Images/liri_spotify_this_song.gif)
 
 3. Type this command in node: node liri.js movie-this '<movie name here>'
 ![Gif of LIRI movie-this](Images/liri_movie_this.gif)
