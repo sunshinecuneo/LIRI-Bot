@@ -14,10 +14,8 @@ var axios = require("axios");
 var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 
-
 // Setting a variable for Moment for the date format
 var moment = require("moment");
-
 
 // Searching the BandsInTown API for a concert
 function concertThis(searchTerm) {
@@ -76,6 +74,8 @@ function getMovie(searchTerm) {
         }
     );
 }
+
+// Function for do-what-it-says
 function doWhatItSays() {
     fs.readFile("random.txt", "utf8", function (err, data) {
         if (err) {
@@ -104,8 +104,6 @@ function doWhatItSays() {
         }
     });
 }
-
-
 
 // Function for determining which command is executed
 var commandThis = function (command, searchTerm) {
@@ -142,7 +140,6 @@ var runCommand = function (argOne, argTwo) {
 };
 
 // MAIN PROCESS
-// =====================================
 runCommand(process.argv[2], process.argv.slice(3).join(" "));
 
 function logSearches(term) {
